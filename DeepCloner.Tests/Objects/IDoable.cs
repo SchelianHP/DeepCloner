@@ -1,7 +1,6 @@
-﻿namespace Force.DeepCloner.Tests.Objects
+﻿namespace DeepCloner.Tests.Core.Objects;
+
+public interface IDoable
 {
-	public interface IDoable
-	{
-		int Do();
-	}
+	int Do();
 }
