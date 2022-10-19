@@ -17,7 +17,7 @@ Installation through Nuget:
 
 ## Supported Frameworks
 
-DeepCloner works for .NET 4.0 or higher or for .NET Standard 1.3 (.NET Core). .NET Standard version implements only Safe copying variant (slightly slower than standard, see Benchmarks).
+DeepCloner (this Fork) works for .NET6 or higher.
 
 ## Limitation
 
