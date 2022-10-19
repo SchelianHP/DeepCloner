@@ -286,11 +286,7 @@ namespace Force.DeepCloner.Tests
 		[Test(Description = "Reflection classes should not be cloned")]
 		public void MethodInfo_Should_Not_Be_Cloned()
 		{
-#if NETCORE13
-			var v = GetType().GetTypeInfo().GetMethod("MethodInfo_Should_Not_Be_Cloned");
-#else
 			var v = GetType().GetMethod("MethodInfo_Should_Not_Be_Cloned");
-#endif
 			Assert.That(ReferenceEquals(v, v.DeepClone()), Is.True);
 			Assert.That(ReferenceEquals(v, v.ShallowClone()), Is.True);
 		}

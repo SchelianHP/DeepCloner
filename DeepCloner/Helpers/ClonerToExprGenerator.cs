@@ -53,13 +53,7 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
-#if !NETCORE
-// don't do anything with this dark magic!
-				if (tp == typeof(ContextBoundObject)) break;
-#else
 				if (tp.Name == "ContextBoundObject") break;
-#endif
-
 				fi.AddRange(tp.GetDeclaredFields());
 				tp = tp.BaseType();
 			}

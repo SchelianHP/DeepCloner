@@ -2,23 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-#if !NETCORE
-using System.Data.Entity;
-#else
-using Microsoft.EntityFrameworkCore;
-#endif
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
-
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
-	[TestFixture(false)]
-#endif
 	[TestFixture(true)]
 	public class SpecificScenariosTest : BaseTest
 	{
@@ -56,7 +46,7 @@ namespace Force.DeepCloner.Tests
 			// Console.WriteLine(at.ChangeTracker);
 			var q = at.Currencies.Where(x => x.CurrencyCode == "AUD");
 			var q2 = q.DeepClone();
-#if NETCORE
+
 			// Console.WriteLine(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions
 			//	.GetRequiredService<Microsoft.EntityFrameworkCore.ChangeTracking.Internal.IChangeTrackerFactory>(
 			//		((Microsoft.EntityFrameworkCore.Infrastructure.IInfrastructure<IServiceProvider>) at).Instance));
@@ -67,7 +57,7 @@ namespace Force.DeepCloner.Tests
 			Console.WriteLine(Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions
 				.GetRequiredService<Microsoft.EntityFrameworkCore.ChangeTracking.Internal.IChangeTrackerFactory>(
 					serviceProvider));*/
-#endif
+
 			// var q2 = q.DeepClone();
 			// Console.WriteLine(q2.);
 			// Assert.That(q.ToArray().Length, Is.EqualTo(1));
@@ -87,26 +77,11 @@ namespace Force.DeepCloner.Tests
 		[Test]
 		public void Clone_ComObject1()
 		{
-#if !NETCORE
-// ReSharper disable SuspiciousTypeConversion.Global
-			var manager = (KnownFolders.IKnownFolderManager)new KnownFolders.KnownFolderManager();
-// ReSharper restore SuspiciousTypeConversion.Global
-			Guid knownFolderId1;
-			Guid knownFolderId2;
-			manager.FolderIdFromCsidl(0, out knownFolderId1);
-			manager.DeepClone().FolderIdFromCsidl(0, out knownFolderId2);
-			Assert.That(knownFolderId1, Is.EqualTo(knownFolderId2));
-#endif
 		}
 
 		[Test]
 		public void Clone_ComObject2()
 		{
-#if !NETCORE
-			Type t = Type.GetTypeFromProgID("SAPI.SpVoice");
-			var obj = Activator.CreateInstance(t);
-			obj.DeepClone();
-#endif
 		}
 
 		[Test]
@@ -144,20 +119,17 @@ namespace Force.DeepCloner.Tests
 		public class AdventureContext : DbContext
 		{
 			public AdventureContext()
-#if !NETCORE
-			: base("Server=.;Integrated Security=SSPI;Database=AdventureWorks")
-#endif
 			{
 			}
 
 			public DbSet<Currency> Currencies { get; set; }
 
-#if NETCORE
+
 			protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 			{
 				optionsBuilder.UseSqlServer(@"Server=.;Database=AdventureWorks;Trusted_Connection=true;MultipleActiveResultSets=true");
 			}
-#endif
+
 		}
 
 		[Test]
@@ -178,22 +150,6 @@ namespace Force.DeepCloner.Tests
 			Assert.That(a, Is.EqualTo(1));
 		}
 
-#if !NETCORE
-		[Test]
-		public void Windows_Forms_Clone()
-		{
-			var form = new System.Windows.Forms.Form();
-			form.Controls.Add(new System.Windows.Forms.ComboBox());
-			form.Controls.Add(new System.Windows.Forms.Button());
-			form.Controls.Add(new System.Windows.Forms.CheckBox());
-			for (var i = 0; i < 100; i++)
-			{
-				var sw = Stopwatch.StartNew();
-				form.DeepClone();
-				Console.WriteLine(sw.ElapsedMilliseconds);
-			}
-		}
-#endif
 
 		private class TestComparer : Comparer<int>
 		{
@@ -206,29 +162,6 @@ namespace Force.DeepCloner.Tests
 			}
 		}
 
-#if !NETCORE
-		public class KnownFolders
-		{
-			[Guid("8BE2D872-86AA-4d47-B776-32CCA40C7018"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-			internal interface IKnownFolderManager
-			{
-				void FolderIdFromCsidl(int csidl, [Out] out Guid knownFolderID);
-
-				void FolderIdToCsidl([In] [MarshalAs(UnmanagedType.LPStruct)] Guid id, [Out] out int csidl);
-
-				void GetFolderIds();
-			}
-
-			[ComImport, Guid("4df0c730-df9d-4ae3-9153-aa6b82e9795a")]
-			internal class KnownFolderManager
-			{
-				// make object unsafe to work
-#pragma warning disable 169
-				private object _fieldX;
-#pragma warning restore 169
-			}
-		}
-#endif
 		public sealed class LazyRef<T>
 		{
 			private Func<T> _initializer;

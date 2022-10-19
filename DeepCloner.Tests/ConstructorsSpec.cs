@@ -4,9 +4,6 @@ using NUnit.Framework;
 
 namespace Force.DeepCloner.Tests
 {
-#if !NETCORE
-	[TestFixture(false)]
-#endif
 	[TestFixture(true)]
 	public class ConstructorsSpec : BaseTest
 	{
@@ -65,27 +62,7 @@ namespace Force.DeepCloner.Tests
 				throw new Exception();
 			}
 		}
-
-#if !NETCORE
-		public class ClonableClass : ICloneable
-		{
-			public object X { get; set; }
-
-			public object Clone()
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		[Test]
-		public void Cloner_Should_Not_Call_Any_Method_Of_Clonable_Class()
-		{
-			// just for check, ensure no hidden behaviour in MemberwiseClone
-			Assert.DoesNotThrow(() => new ClonableClass().DeepClone());
-			Assert.DoesNotThrow(() => new { X = new ClonableClass() }.DeepClone());
-		}
-#endif
-
+		
 		[Test]
 		public void Object_With_Private_Constructor_Should_Be_Cloned()
 		{
@@ -115,33 +92,6 @@ namespace Force.DeepCloner.Tests
 			Assert.That(cloned.B, Is.EqualTo("x"));
 		}
 
-#if !NETCORE
-		private class C3 : ContextBoundObject
-		{
-		}
-
-		private class C4 : MarshalByRefObject
-		{
-		}
-
-		[Test]
-		public void ContextBound_Object_Should_Be_Cloned()
-		{
-			// FormatterServices.CreateUninitializedObject cannot use context-bound objects
-			var c = new C3();
-			var cloned = c.DeepClone();
-			Assert.That(cloned, Is.Not.Null);
-		}
-
-		[Test]
-		public void MarshalByRef_Object_Should_Be_Cloned()
-		{
-			// FormatterServices.CreateUninitializedObject cannot use context-bound objects
-			var c = new C4();
-			var cloned = c.DeepClone();
-			Assert.That(cloned, Is.Not.Null);
-		}
-#endif
 
 		[Test]
 		public void Cloner_Should_Not_Call_Any_Method_Of_Class_Be_Cloned()

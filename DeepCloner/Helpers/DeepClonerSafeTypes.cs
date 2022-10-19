@@ -27,9 +27,6 @@ namespace Force.DeepCloner.Helpers
 							Type.GetType("System.RuntimeTypeHandle"),
 							StringComparer.Ordinal.GetType(),
 							StringComparer.CurrentCulture.GetType(), // CultureAwareComparer - can be same
-#if !NETCORE
-							typeof(DBNull)
-#endif
 						}) KnownTypes.TryAdd(x, true);
 		}
 
@@ -46,43 +43,7 @@ namespace Force.DeepCloner.Helpers
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
-
-#if !NETCORE
-			// do not do anything with remoting. it is very dangerous to clone, bcs it relate to deep core of framework
-			if (type.FullName.StartsWith("System.Runtime.Remoting.")
-				&& type.Assembly == typeof(System.Runtime.Remoting.CustomErrorsModes).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-
-			if (type.FullName.StartsWith("System.Reflection.") && type.Assembly == typeof(PropertyInfo).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-
-			// catched by previous condition
-			/*if (type.FullName.StartsWith("System.Reflection.Emit") && type.Assembly == typeof(System.Reflection.Emit.OpCode).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}*/
 			
-			// this types are serious native resources, it is better not to clone it
-			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-
-			// Better not to do anything with COM
-			if (type.IsCOMObject)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-#else
 			// do not copy db null
 			if (type.FullName.StartsWith("System.DBNull"))
 			{
@@ -120,7 +81,7 @@ namespace Force.DeepCloner.Helpers
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
-#endif
+
 			// default comparers should not be cloned due possible comparison EqualityComparer<T>.Default == comparer
 			if (type.FullName.Contains("EqualityComparer"))
 			{

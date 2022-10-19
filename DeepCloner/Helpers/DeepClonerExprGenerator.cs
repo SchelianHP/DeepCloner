@@ -19,12 +19,7 @@ namespace Force.DeepCloner.Helpers
 			try
 			{
 				typeof(DeepClonerExprGenerator).GetPrivateStaticField(nameof(_canFastCopyReadonlyFields)).SetValue(null, true);
-#if NETCORE13
-				_fieldSetMethod = typeof(FieldInfo).GetRuntimeMethod("SetValue", new[] { typeof(object), typeof(object) });
-#else
 				_fieldSetMethod = typeof(FieldInfo).GetMethod("SetValue", new[] {typeof(object), typeof(object)});
-#endif
-				
 				if (_fieldSetMethod == null)
 					throw new ArgumentNullException();
 			}
@@ -134,13 +129,7 @@ namespace Force.DeepCloner.Helpers
 			var tp = type;
 			do
 			{
-#if !NETCORE
-				// don't do anything with this dark magic!
-				if (tp == typeof(ContextBoundObject)) break;
-#else
 				if (tp.Name == "ContextBoundObject") break;
-#endif
-
 				fi.AddRange(tp.GetDeclaredFields());
 				tp = tp.BaseType();
 			}
